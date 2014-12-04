@@ -1,0 +1,7 @@
+gom 'github.com/Sirupsen/logrus'
+gom 'github.com/google/go-querystring/query'
+
+group :test do
+  gom 'github.com/onsi/ginkgo'
+  gom 'github.com/onsi/gomega'
+end
