@@ -18,16 +18,17 @@ type DataClient interface {
 }
 
 type defaultDataClient struct {
-	URL string
-
-	log *logrus.Logger
+	URL     string
+	log     *logrus.Logger
+	options []Option
 }
 
 // NewDataClient creates a new DataClient for talking to the Read API
-func NewDataClient(url string, logger *logrus.Logger) DataClient {
+func NewDataClient(url string, logger *logrus.Logger, options ...Option) DataClient {
 	return &defaultDataClient{
-		URL: url,
-		log: logger,
+		URL:     url,
+		log:     logger,
+		options: options,
 	}
 }
 
@@ -59,7 +60,7 @@ func (client *defaultDataClient) Fetch(dataGroup, dataType string, dataQuery Que
 		"url": url,
 	}).Debug("Requesting performance data for slug")
 
-	backdropResponse, err := NewRequest(url)
+	backdropResponse, err := NewRequest(url, client.options...)
 	if err != nil {
 		return nil, err
 	}
