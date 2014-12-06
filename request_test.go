@@ -38,6 +38,32 @@ var _ = Describe("NewRequest", func() {
 			"You're authorized!"))
 	})
 
+	It("handles empty bearer tokens", func() {
+		bearerToken := ""
+
+		ts := testServer(func(w http.ResponseWriter, r *http.Request) {
+			if r.Header.Get("Authorization") != "Bearer "+bearerToken {
+				w.WriteHeader(http.StatusUnauthorized)
+				fmt.Fprintln(w, "Not authorized!")
+				return
+			}
+
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintln(w, "You're authorized!")
+		})
+
+		defer ts.Close()
+
+		response, err := NewRequest(ts.URL, BearerToken(bearerToken))
+		Expect(err).To(BeNil())
+		Expect(response.StatusCode).To(Equal(http.StatusUnauthorized))
+
+		body, err := ReadResponseBody(response)
+		Expect(err).To(BeNil())
+		Expect(strings.TrimSpace(string(body))).To(Equal(
+			"Not authorized!"))
+	})
+
 	It("handles bad networking from the origin server", func() {
 		ts := testServer(func(w http.ResponseWriter, r *http.Request) {
 			hj, ok := w.(http.Hijacker)

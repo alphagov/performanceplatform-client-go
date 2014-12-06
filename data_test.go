@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/onsi/gomega/ghttp"
@@ -55,6 +56,21 @@ var _ = Describe("Data", func() {
 
 			backdrop, err := parseBackdropResponse([]byte(exampleResponse))
 			Expect(err).To(MatchError("Ahh an error happened"))
+			Expect(backdrop).To(BeNil())
+		})
+
+		It("returns an error when presented with a non-JSON response", func() {
+			exampleResponse := strings.TrimSpace(`<html>
+  <head>
+    <title>uh oh</title>
+  </head>
+  <body>
+    <main>Hmmm</main>
+  </body>
+</html>`)
+
+			backdrop, err := parseBackdropResponse([]byte(exampleResponse))
+			Expect(err).NotTo(BeNil())
 			Expect(backdrop).To(BeNil())
 		})
 	})
@@ -115,6 +131,28 @@ var _ = Describe("Data", func() {
 				Expect(err).To(BeNil())
 				Expect(len(data)).To(Equal(1))
 			})
+
+			It("handles bad networking from the origin server", func() {
+				ts := testServer(func(w http.ResponseWriter, r *http.Request) {
+					hj, ok := w.(http.Hijacker)
+					if !ok {
+						panic("webserver doesn't support hijacking – failing the messy way")
+					}
+					conn, _, err := hj.Hijack()
+					if err != nil {
+						panic("webserver doesn't support hijacking – failing the messy way")
+					}
+					// Fail in a clean way so that we don't clutter the output
+					conn.Close()
+				})
+				defer ts.Close()
+
+				client := NewDataClient(ts.URL, logrus.New(), MaxElapsedTime(5*time.Millisecond))
+				response, err := client.Fetch("govuk-info", "page-statistics", QueryParams{})
+				Expect(err).NotTo(BeNil())
+				Expect(response).To(BeNil())
+			})
+
 		})
 	})
 
