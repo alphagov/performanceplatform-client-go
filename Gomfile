@@ -1,4 +1,5 @@
 gom 'github.com/Sirupsen/logrus'
+gom 'github.com/cenkalti/backoff'
 gom 'github.com/google/go-querystring/query'
 
 group :test do
