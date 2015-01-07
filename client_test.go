@@ -53,7 +53,8 @@ var _ = Describe("MetaClient", func() {
           "filter_by":[
             "service_id:dwp-carers-allowance-new-claims",
             "type:seasonally-adjusted"
-          ]
+          ],
+          "group_by": ["a-thing"]
         }
       }
     }

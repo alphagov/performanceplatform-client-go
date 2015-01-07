@@ -56,7 +56,7 @@ type DataSource struct {
 // QueryParams represents the possible parameters that the Backdrop RPC read API supports
 type QueryParams struct {
 	FilterBy []string  `json:"filter_by,omitempty" url:"filter_by,omitempty"`
-	GroupBy  string    `json:"group_by,omitempty" url:"group_by,omitempty"`
+	GroupBy  []string  `json:"group_by,omitempty" url:"group_by,omitempty"`
 	Collect  []string  `json:"collect,omitempty" url:"collect,omitempty"`
 	SortBy   string    `json:"sort_by,omitempty" url:"sort_by,omitempty"`
 	Duration int       `json:"duration,omitempty" url:"duration,omitempty"`
