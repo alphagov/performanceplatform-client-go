@@ -29,6 +29,8 @@ func (ro *RequestOptions) option(req *http.Request, opts ...Option) (previous Op
 var (
 	// ErrNotFound is an error indicating that the server returned a 404.
 	ErrNotFound = errors.New("not found")
+	// ErrBadRequest is an error indicating that the client request had a problem.
+	ErrBadRequest = errors.New("bad request")
 )
 
 // NewRequest tries to make a request to the URL, returning the http.Response if it was successful, or an error if there was a problem.
@@ -55,6 +57,10 @@ func NewRequest(url string, options ...Option) (*http.Response, error) {
 
 	if response.StatusCode == http.StatusNotFound {
 		return nil, ErrNotFound
+	}
+
+	if response.StatusCode == http.StatusBadRequest {
+		return response, ErrBadRequest
 	}
 
 	return response, err
