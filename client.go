@@ -96,6 +96,8 @@ func (c *defaultMetaClient) Fetch(slug string) (dashboard Dashboard, err error) 
 		case ErrBadRequest:
 			if body, readErr := ReadResponseBody(resp); readErr == nil {
 				c.log.Errorf("Bad request to URL %q with result %q", url, body)
+			} else {
+				c.log.Errorf("Bad request to URL %q", url)
 			}
 		case ErrNotFound:
 			c.log.Errorf("Not found: %q", url)

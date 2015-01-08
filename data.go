@@ -66,7 +66,10 @@ func (client *defaultDataClient) Fetch(dataGroup, dataType string, dataQuery Que
 		switch err {
 		case ErrBadRequest:
 			if body, readErr := ReadResponseBody(backdropResponse); readErr == nil {
-				client.log.Errorf("Bad request to URL %q with result %q", url, body)
+				_, backdropErr := parseBackdropResponse(body)
+				client.log.Errorf("Bad request to URL %q %v %q", url, err, backdropErr)
+			} else {
+				c.log.Errorf("Bad request to URL %q", url)
 			}
 		case ErrNotFound:
 			client.log.Errorf("Not found: %q", url)
