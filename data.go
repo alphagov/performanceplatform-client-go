@@ -61,7 +61,16 @@ func (client *defaultDataClient) Fetch(dataGroup, dataType string, dataQuery Que
 	}).Debug("Requesting performance data for slug")
 
 	backdropResponse, err := NewRequest(url, client.options...)
+
 	if err != nil {
+		switch err {
+		case ErrBadRequest:
+			if body, readErr := ReadResponseBody(backdropResponse); readErr == nil {
+				client.log.Errorf("Bad request to URL %q with result %q", url, body)
+			}
+		case ErrNotFound:
+			client.log.Errorf("Not found: %q", url)
+		}
 		return nil, err
 	}
 
