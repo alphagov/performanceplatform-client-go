@@ -69,7 +69,7 @@ func (client *defaultDataClient) Fetch(dataGroup, dataType string, dataQuery Que
 				_, backdropErr := parseBackdropResponse(body)
 				client.log.Errorf("Bad request to URL %q %v %q", url, err, backdropErr)
 			} else {
-				c.log.Errorf("Bad request to URL %q", url)
+				client.log.Errorf("Bad request to URL %q", url)
 			}
 		case ErrNotFound:
 			client.log.Errorf("Not found: %q", url)
