@@ -114,6 +114,21 @@ var _ = Describe("NewRequest", func() {
 		Expect(err).ShouldNot(BeNil())
 		Expect(err).Should(Equal(ErrNotFound))
 	})
+
+	It("propagates 400s", func() {
+		ts := testServer(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, `{
+message: "Either 'duration' or both 'start_at' and 'end_at' are required for a period query",
+status: "error"
+}`)
+		})
+		defer ts.Close()
+		response, err := NewRequest(ts.URL, BearerToken("FOO"))
+		Expect(response).ShouldNot(BeNil())
+		Expect(err).ShouldNot(BeNil())
+		Expect(err).Should(Equal(ErrBadRequest))
+	})
 })
 
 func testServer(handler interface{}) *httptest.Server {
