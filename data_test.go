@@ -101,6 +101,13 @@ var _ = Describe("Data", func() {
 					FilterBy: []string{"pagePath:/bank-holidays", "bar:foo"},
 				})).To(Equal("http://perf/data/govuk-info/page-statistics?filter_by=pagePath%3A%2Fbank-holidays&filter_by=bar%3Afoo"))
 			})
+
+			It("Should add filter by prefix parameters", func() {
+				client := NewDataClient("http://perf", nil)
+				Expect(client.BuildURL("govuk-info", "page-statistics", QueryParams{
+					FilterByPrefix: []string{"pagePath:/bank-holidays", "bar:foo"},
+				})).To(Equal("http://perf/data/govuk-info/page-statistics?filter_by_prefix=pagePath%3A%2Fbank-holidays&filter_by_prefix=bar%3Afoo"))
+			})
 		})
 
 		Describe("Fetch", func() {
