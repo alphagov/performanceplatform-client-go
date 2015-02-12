@@ -36,8 +36,6 @@ var (
 // NewRequest tries to make a request to the URL, returning the http.Response if it was successful, or an error if there was a problem.
 // Optional Option arguments can be passed to specify contextual behaviour for this request. See MaxElapsedTime.
 func NewRequest(url string, options ...Option) (*http.Response, error) {
-	client := http.Client{}
-
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -49,7 +47,7 @@ func NewRequest(url string, options ...Option) (*http.Response, error) {
 	requestOptions := RequestOptions{MaxElapsedTime: 5 * time.Second}
 	requestOptions.option(request, options...)
 
-	response, err := tryGet(client, request, requestOptions)
+	response, err := tryGet(request, requestOptions)
 
 	if err != nil {
 		return nil, err
@@ -94,13 +92,13 @@ func ReadResponseBody(response *http.Response) ([]byte, error) {
 	return ioutil.ReadAll(response.Body)
 }
 
-func tryGet(client http.Client, req *http.Request, options RequestOptions) (res *http.Response, err error) {
+func tryGet(req *http.Request, options RequestOptions) (res *http.Response, err error) {
 	// Use a channel to communicate between the goroutines. We use a channel rather
 	// than simple variable closure since that's how Go works :)
 	c := make(chan *http.Response, 1)
 
 	operation := func() error {
-		response, httpError := client.Do(req)
+		response, httpError := http.DefaultClient.Do(req)
 		if httpError != nil {
 			return httpError
 		}
